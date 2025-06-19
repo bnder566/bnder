@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل مستخدم جديد</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Tahoma', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .register-box {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 480px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2196f3;
+      margin-bottom: 25px;
+    }
+
+    .message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-left: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+    }
+
+    .status {
+      font-size: 14px;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+
+    button {
+      background-color: #2196f3;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1e88e5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="register-box">
+  <h2>نموذج تسجيل مستخدم</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p class="message {{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div>
+      <label for="id_username">اسم المستخدم:</label>
+      {{ form.username }}
+      <div id="username-status" class="status"></div>
+      {% if form.username.errors %}
+        <p class="message error">{{ form.username.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="id_email">البريد الإلكتروني:</label>
+      {{ form.email }}
+      <div id="email-status" class="status"></div>
+      {% if form.email.errors %}
+        <p class="message error">{{ form.email.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="id_password">كلمة المرور:</label>
+      {{ form.password }}
+      <div id="password-status" class="status"></div>
+      {% if form.password.errors %}
+        <p class="message error">{{ form.password.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="id_confirm_password">تأكيد كلمة المرور:</label>
+      {{ form.confirm_password }}
+      <div id="confirm-password-status" class="status"></div>
+      {% if form.confirm_password.errors %}
+        <p class="message error">{{ form.confirm_password.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="id_phone_number">رقم الجوال:</label>
+      {{ form.phone_number }}
+      <div id="phone-status" class="status"></div>
+      {% if form.phone_number.errors %}
+        <p class="message error">{{ form.phone_number.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label>هل أنت بائع؟</label>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        {{ form.is_seller }}
+      </div>
+    </div>
+
+    <button type="submit">تسجيل</button>
+  </form>
+</div>
+
+<script>
+  const usernameInput = document.getElementById("id_username");
+  const emailInput = document.getElementById("id_email");
+  const passwordInput = document.getElementById("id_password");
+  const confirmPasswordInput = document.getElementById("id_confirm_password");
+  const phoneInput = document.getElementById("id_phone_number");
+
+  const usernameStatus = document.getElementById("username-status");
+  const emailStatus = document.getElementById("email-status");
+  const passwordStatus = document.getElementById("password-status");
+  const confirmPasswordStatus = document.getElementById("confirm-password-status");
+  const phoneStatus = document.getElementById("phone-status");
+
+  usernameInput.addEventListener("input", () => {
+    const val = usernameInput.value.trim();
+    if (!val) return usernameStatus.textContent = "";
+    fetch(`/accounts/check-username/?username=${encodeURIComponent(val)}`)
+      .then(res => res.json())
+      .then(data => {
+        usernameStatus.textContent = data.available ? "✅ متاح" : "❌ غير متاح";
+        usernameStatus.className = `status ${data.available ? "success" : "error"}`;
+      });
+  });
+
+  emailInput.addEventListener("input", () => {
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+    emailStatus.textContent = valid ? "✅ صحيح" : "❌ غير صالح";
+    emailStatus.className = `status ${valid ? "success" : "error"}`;
+  });
+
+  passwordInput.addEventListener("input", () => {
+    const strong = passwordInput.value.length >= 8;
+    passwordStatus.textContent = strong ? "✅ قوية" : "❌ ضعيفة";
+    passwordStatus.className = `status ${strong ? "success" : "error"}`;
+  });
+
+  confirmPasswordInput.addEventListener("input", () => {
+    const match = passwordInput.value === confirmPasswordInput.value;
+    confirmPasswordStatus.textContent = match ? "✅ متطابقة" : "❌ غير متطابقة";
+    confirmPasswordStatus.className = `status ${match ? "success" : "error"}`;
+  });
+
+  phoneInput.addEventListener("input", () => {
+    const valid = /^05\d{8}$/.test(phoneInput.value);
+    phoneStatus.textContent = valid ? "✅ صحيح" : "❌ يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
+    phoneStatus.className = `status ${valid ? "success" : "error"}`;
+  });
+</script>
+
+</body>
+</html>
