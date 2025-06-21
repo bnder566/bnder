@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.http import JsonResponse
 
@@ -7,14 +8,19 @@ from .forms import UserRegistrationForm
 from .models import UserProfile
 
 
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import LoginForm
+
 def register_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
-        
+
         if form.is_valid():
             username = form.cleaned_data['username']
 
-            # تحقق من وجود المستخدم مسبقًا
+            # التحقق من تكرار اسم المستخدم
             if User.objects.filter(username=username).exists():
                 messages.error(request, "❌ اسم المستخدم مستخدم بالفعل، الرجاء اختيار اسم آخر.")
             else:
@@ -23,15 +29,20 @@ def register_view(request):
                 user.set_password(form.cleaned_data['password'])
                 user.save()
 
-                # إنشاء الملف الشخصي
+                # إنشاء الملف الشخصي المرتبط بالمستخدم
                 UserProfile.objects.create(
                     user=user,
                     phone_number=form.cleaned_data['phone_number'],
-                    is_seller=form.cleaned_data['is_seller']
+                    is_seller=form.cleaned_data['is_seller'] == 'True'  # من نموذج ChoiceField نص ← Boolean
                 )
 
-                messages.success(request, "✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.")
-                return redirect('/accounts/login/')
+                # تسجيل الدخول مباشرة
+                user = authenticate(username=username, password=form.cleaned_data['password'])
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, "✅ تم إنشاء الحساب وتسجيل الدخول بنجاح.")
+                    return redirect('/')  # توجيه المستخدم للصفحة الرئيسية
+
         else:
             messages.error(request, "❌ تحقق من صحة الحقول المدخلة.")
     else:
@@ -40,9 +51,18 @@ def register_view(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 
-def login_view(request):
-    return render(request, 'accounts/login.html')
 
+def login_view(request):
+    form = LoginForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+        if user:
+            login(request, user)
+            messages.success(request, "✅ تم تسجيل الدخول بنجاح.")
+            return redirect('/')  # ← هنا نعيد التوجيه إلى الصفحة الرئيسية
+        else:
+            messages.error(request, "❌ اسم المستخدم أو كلمة المرور غير صحيحة.")
+    return render(request, 'accounts/login.html', {'form': form})
 
 def check_username_availability(request):
     username = request.GET.get('username', '')
