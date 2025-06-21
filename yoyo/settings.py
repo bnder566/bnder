@@ -1,9 +1,12 @@
 from pathlib import Path
 
+# المسار الرئيسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# مفتاح الأمان (سري)
 SECRET_KEY = 'django-insecure-!xz7&apjfy+h3110hp4hvev=i9wr@dodj0h@p+b2lggiim*urc'
 
+# وضع التطوير
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -23,6 +26,7 @@ INSTALLED_APPS = [
     'core',       # الصفحات العامة والواجهة الرئيسية
 ]
 
+# الميدل وير
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -33,12 +37,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# ملف الروابط الرئيسي
 ROOT_URLCONF = 'yoyo.urls'
 
+# إعدادات القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ← تم إضافة هذا السطر ليتعرف على مجلد القوالب
+        'DIRS': [BASE_DIR / 'templates'],  # ← المجلد الرئيسي للقوالب
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -50,8 +56,10 @@ TEMPLATES = [
     },
 ]
 
+# تطبيق WSGI
 WSGI_APPLICATION = 'yoyo.wsgi.application'
 
+# قاعدة البيانات
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -59,30 +67,27 @@ DATABASES = {
     }
 }
 
+# التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # اللغة والتوقيت
 LANGUAGE_CODE = 'ar'
 TIME_ZONE = 'Asia/Riyadh'
-
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# الملفات الثابتة
+# الملفات الثابتة (CSS, JS, صور ثابتة)
 STATIC_URL = 'static/'
 
+# ملفات الميديا (صور/ملفات يتم رفعها)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# الإعداد الافتراضي لحقل الـ ID
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

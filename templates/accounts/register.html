@@ -1,247 +1,154 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>تسجيل مستخدم جديد</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: 'Tahoma', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f6f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <title>تسجيل حساب</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f6f7;
+            margin: 0;
+            padding: 0;
+        }
 
-    .register-box {
-      background: white;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 480px;
-    }
+        .form-container {
+            max-width: 420px;
+            margin: 60px auto;
+            background-color: #fff;
+            padding: 30px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    h2 {
-      text-align: center;
-      color: #2196f3;
-      margin-bottom: 25px;
-    }
+        h2 {
+            text-align: center;
+            color: #1565c0;
+            margin-bottom: 25px;
+        }
 
-    .message {
-      padding: 10px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      text-align: center;
-    }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .message.success {
-      background-color: #d4edda;
-      color: #155724;
-    }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
-    .message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
+        .availability {
+            font-size: 12px;
+            margin-top: -12px;
+            margin-bottom: 12px;
+            color: #888;
+        }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
 
-    label {
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 5px;
-      display: block;
-    }
+        .radio-group label {
+            font-weight: normal;
+        }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="tel"] {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
-      width: 100%;
-    }
+        button {
+            width: 100%;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-    .status {
-      font-size: 14px;
-      margin-top: 5px;
-      font-weight: bold;
-    }
+        button:hover {
+            background-color: #1976d2;
+        }
 
-    .success {
-      color: green;
-    }
+        .messages {
+            color: red;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+    </style>
 
-    .error {
-      color: red;
-    }
+    <script>
+        function checkUsernameAvailability() {
+            const usernameField = document.getElementById('id_username');
+            const feedback = document.getElementById('username-feedback');
 
-    button {
-      background-color: #2196f3;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+            fetch(`/accounts/check-username/?username=${usernameField.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.available) {
+                        feedback.textContent = "✅ متاح";
+                        feedback.style.color = "green";
+                    } else {
+                        feedback.textContent = "❌ غير متاح";
+                        feedback.style.color = "red";
+                    }
+                });
+        }
 
-    button:hover {
-      background-color: #1e88e5;
-    }
-
-    .login-link {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 15px;
-    }
-
-    .login-link a {
-      color: #2196f3;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .login-link a:hover {
-      text-decoration: underline;
-    }
-  </style>
+        function validatePhoneNumber(input) {
+            const phone = input.value;
+            const regex = /^05\d{8}$/;
+            if (!regex.test(phone)) {
+                input.setCustomValidity("رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام");
+            } else {
+                input.setCustomValidity("");
+            }
+        }
+    </script>
 </head>
 <body>
 
-<div class="register-box">
-  <h2>نموذج تسجيل مستخدم</h2>
+<div class="form-container">
+    <h2>إنشاء حساب جديد</h2>
 
-  {% if messages %}
-    {% for message in messages %}
-      <p class="message {{ message.tags }}">{{ message }}</p>
-    {% endfor %}
-  {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {% for message in messages %}
+            <div class="messages">{{ message }}</div>
+        {% endfor %}
 
-  <form method="post" novalidate>
-    {% csrf_token %}
+        <label for="id_username">اسم المستخدم:</label>
+        <input type="text" name="username" id="id_username" required oninput="checkUsernameAvailability()">
+        <div class="availability" id="username-feedback"></div>
 
-    <div>
-      <label for="id_username">اسم المستخدم:</label>
-      {{ form.username }}
-      <div id="username-status" class="status"></div>
-      {% if form.username.errors %}
-        <p class="message error">{{ form.username.errors.0 }}</p>
-      {% endif %}
-    </div>
+        <label for="id_email">البريد الإلكتروني:</label>
+        <input type="email" name="email" id="id_email" required>
 
-    <div>
-      <label for="id_email">البريد الإلكتروني:</label>
-      {{ form.email }}
-      <div id="email-status" class="status"></div>
-      {% if form.email.errors %}
-        <p class="message error">{{ form.email.errors.0 }}</p>
-      {% endif %}
-    </div>
+        <label for="id_password">كلمة المرور:</label>
+        <input type="password" name="password" id="id_password" required>
 
-    <div>
-      <label for="id_password">كلمة المرور:</label>
-      {{ form.password }}
-      <div id="password-status" class="status"></div>
-      {% if form.password.errors %}
-        <p class="message error">{{ form.password.errors.0 }}</p>
-      {% endif %}
-    </div>
+        <label for="id_confirm_password">تأكيد كلمة المرور:</label>
+        <input type="password" name="confirm_password" id="id_confirm_password" required>
 
-    <div>
-      <label for="id_confirm_password">تأكيد كلمة المرور:</label>
-      {{ form.confirm_password }}
-      <div id="confirm-password-status" class="status"></div>
-      {% if form.confirm_password.errors %}
-        <p class="message error">{{ form.confirm_password.errors.0 }}</p>
-      {% endif %}
-    </div>
+        <label for="id_phone_number">رقم الجوال:</label>
+        <input type="text" name="phone_number" id="id_phone_number" oninput="validatePhoneNumber(this)" required>
 
-    <div>
-      <label for="id_phone_number">رقم الجوال:</label>
-      {{ form.phone_number }}
-      <div id="phone-status" class="status"></div>
-      {% if form.phone_number.errors %}
-        <p class="message error">{{ form.phone_number.errors.0 }}</p>
-      {% endif %}
-    </div>
+        <label>هل أنت بائع؟</label>
+        <div class="radio-group">
+            <label><input type="radio" name="is_seller" value="True"> نعم</label>
+            <label><input type="radio" name="is_seller" value="False" checked> لا</label>
+        </div>
 
-    <div>
-      <label>هل أنت بائع؟</label>
-      <div style="display: flex; flex-direction: column; gap: 5px;">
-        {{ form.is_seller }}
-      </div>
-    </div>
-
-    <button type="submit">تسجيل</button>
-
-    <div class="login-link">
-      لديك حساب؟ <a href="{% url 'login' %}">تسجيل الدخول</a>
-    </div>
-  </form>
+        <button type="submit">تسجيل</button>
+    </form>
 </div>
-
-<script>
-  const usernameInput = document.getElementById("id_username");
-  const emailInput = document.getElementById("id_email");
-  const passwordInput = document.getElementById("id_password");
-  const confirmPasswordInput = document.getElementById("id_confirm_password");
-  const phoneInput = document.getElementById("id_phone_number");
-
-  const usernameStatus = document.getElementById("username-status");
-  const emailStatus = document.getElementById("email-status");
-  const passwordStatus = document.getElementById("password-status");
-  const confirmPasswordStatus = document.getElementById("confirm-password-status");
-  const phoneStatus = document.getElementById("phone-status");
-
-  usernameInput.addEventListener("input", () => {
-    const val = usernameInput.value.trim();
-    if (!val) return usernameStatus.textContent = "";
-    fetch(`/accounts/check-username/?username=${encodeURIComponent(val)}`)
-      .then(res => res.json())
-      .then(data => {
-        usernameStatus.textContent = data.available ? "✅ متاح" : "❌ غير متاح";
-        usernameStatus.className = `status ${data.available ? "success" : "error"}`;
-      });
-  });
-
-  emailInput.addEventListener("input", () => {
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
-    emailStatus.textContent = valid ? "✅ صحيح" : "❌ غير صالح";
-    emailStatus.className = `status ${valid ? "success" : "error"}`;
-  });
-
-  passwordInput.addEventListener("input", () => {
-    const strong = passwordInput.value.length >= 8;
-    passwordStatus.textContent = strong ? "✅ قوية" : "❌ ضعيفة";
-    passwordStatus.className = `status ${strong ? "success" : "error"}`;
-  });
-
-  confirmPasswordInput.addEventListener("input", () => {
-    const match = passwordInput.value === confirmPasswordInput.value;
-    confirmPasswordStatus.textContent = match ? "✅ متطابقة" : "❌ غير متطابقة";
-    confirmPasswordStatus.className = `status ${match ? "success" : "error"}`;
-  });
-
-  phoneInput.addEventListener("input", () => {
-    const valid = /^05\d{8}$/.test(phoneInput.value);
-    phoneStatus.textContent = valid ? "✅ صحيح" : "❌ يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
-    phoneStatus.className = `status ${valid ? "success" : "error"}`;
-  });
-</script>
 
 </body>
 </html>

@@ -15,6 +15,7 @@ class Car(models.Model):
     year = models.PositiveIntegerField(verbose_name="سنة الصنع")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="السعر")
     is_available = models.BooleanField(default=True, verbose_name="متوفر")
+    image = models.ImageField(upload_to='car_images/', blank=True, null=True, verbose_name="صورة السيارة")
 
     class Meta:
         verbose_name = "سيارة"

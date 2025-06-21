@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ContactForm
-from inventory.models import Car  # تأكد من مسار الاستيراد حسب موقع نموذج Car
+from inventory.models import Car  # تأكد أن هذا المسار صحيح
 
-# الصفحة الرئيسية
+# الصفحة الرئيسية - تعرض السيارات المتوفرة
 def index(request):
-    return render(request, 'index.html')
+    cars = Car.objects.filter(is_available=True).order_by('-year', '-id')
+    return render(request, 'index.html', {'cars': cars})
 
 # صفحة اتصل بنا
 def contact_view(request):
@@ -12,16 +13,16 @@ def contact_view(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('contact_success')
+            return redirect('core:contact_success')  # باستخدام namespace
     else:
         form = ContactForm()
     return render(request, 'contact.html', {'form': form})
 
-# رسالة النجاح بعد الإرسال
+# صفحة نجاح إرسال النموذج
 def contact_success(request):
     return render(request, 'contact_success.html')
 
-# عرض قائمة السيارات
+# صفحة مستقلة لقائمة السيارات (إن احتجت عرضها خارج الصفحة الرئيسية)
 def cars_list_view(request):
-    cars = Car.objects.all()
+    cars = Car.objects.filter(is_available=True).order_by('-year', '-id')
     return render(request, 'core/cars_list.html', {'cars': cars})

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>قائمة السيارات</title>
+</head>
+<body>
+    <h1>السيارات المتوفرة</h1>
+    <ul>
+        {% for car in cars %}
+            <li>
+                <a href="{% url 'inventory:car_detail' car.id %}">
+                    {{ car.brand }} - {{ car.model }} ({{ car.year }}) - {{ car.price }} ريال
+                </a>
+            </li>
+        {% empty %}
+            <li>لا توجد سيارات متوفرة حالياً.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

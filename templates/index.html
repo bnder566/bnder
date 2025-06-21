@@ -11,20 +11,24 @@
             padding: 0;
             background-color: #f4f6f7;
         }
+
         .hero {
             background: linear-gradient(to right, #2196f3, #21cbf3);
             color: white;
             padding: 60px 20px;
             text-align: center;
         }
+
         .hero h2 {
             margin-bottom: 10px;
             font-size: 36px;
         }
+
         .hero p {
             font-size: 18px;
             margin-bottom: 30px;
         }
+
         .btn-register {
             background-color: #ffffff;
             color: #2196f3;
@@ -37,24 +41,61 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s ease;
         }
+
         .btn-register:hover {
             background-color: #e3f2fd;
         }
+
         .section {
             padding: 40px 20px;
             text-align: center;
         }
+
         .section h3 {
             margin-bottom: 20px;
             color: #1e88e5;
         }
-        .car-box {
-            background: white;
-            margin: 20px auto;
-            padding: 20px;
+
+        /* تنسيق بطاقات السيارات */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .car-card {
+            background-color: white;
             border-radius: 10px;
-            max-width: 600px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: right;
+        }
+
+        .car-card img {
+            max-width: 100%;
+            border-radius: 8px;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .car-card h4 {
+            margin: 10px 0 5px;
+            color: #1565c0;
+        }
+
+        .car-card p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .car-card a {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #2196f3;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -65,18 +106,26 @@
     <div class="hero">
         <h2>مرحبًا بك في بريدة للسيارات</h2>
         <p>أفضل العروض على السيارات الجديدة والمستعملة</p>
-        <a href="/accounts/register/" class="btn-register">إنشاء حساب</a>
+        <a href="{% url 'accounts:register' %}" class="btn-register">إنشاء حساب</a>
+
     </div>
 
     <div class="section" id="cars">
         <h3>🚘 السيارات المتوفرة</h3>
-        <div class="car-box">
-            <h4>تويوتا كامري 2022</h4>
-            <p>نظيفة جدًا، ممشى قليل، لون رمادي.</p>
-        </div>
-        <div class="car-box">
-            <h4>هونداي إلنترا 2021</h4>
-            <p>حالة ممتازة، مكينة وجير وكالة، بدون رش.</p>
+        <div class="cars-grid">
+            {% for car in cars %}
+                <div class="car-card">
+                    {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="صورة {{ car.brand }}">
+                    {% endif %}
+                    <h4>{{ car.brand }} {{ car.model }}</h4>
+                    <p>السنة: {{ car.year }}</p>
+                    <p>السعر: {{ car.price }} ريال</p>
+                    <a href="{% url 'inventory:car_detail' car.id %}">عرض التفاصيل</a>
+                </div>
+            {% empty %}
+                <p>لا توجد سيارات متوفرة حالياً.</p>
+            {% endfor %}
         </div>
     </div>
 

@@ -5,6 +5,8 @@ from .views import (
     check_username_availability,
 )
 
+app_name = 'accounts'  # ✅ مهم لتطابق namespace في include
+
 urlpatterns = [
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
