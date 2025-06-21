@@ -1,4 +1,7 @@
 from pathlib import Path
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # المسار الرئيسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,6 +22,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # تطبيقات خارجية
+    'cloudinary',
+    'cloudinary_storage',
 
     # التطبيقات المخصصة للمشروع
     'accounts',   # إدارة المستخدمين وتسجيل الدخول
@@ -44,7 +51,7 @@ ROOT_URLCONF = 'yoyo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ← المجلد الرئيسي للقوالب
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,12 +89,24 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# الملفات الثابتة (CSS, JS, صور ثابتة)
+# الملفات الثابتة
 STATIC_URL = 'static/'
 
-# ملفات الميديا (صور/ملفات يتم رفعها)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# ملفات الميديا - Cloudinary
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dj8rmgbo4',
+    'API_KEY': '574838334652811',
+    'API_SECRET': '0VONXvC0Nixye7yuDP2Aud5-VAY',
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # الإعداد الافتراضي لحقل الـ ID
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import cloudinary
+
+cloudinary.config( 
+  cloud_name = 'dj8rmgbo4', 
+  api_key = '574838334652811', 
+  api_secret = '0VONXvC0Nixye7yuDP2Aud5-VAY' 
+)

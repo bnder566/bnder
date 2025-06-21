@@ -8,6 +8,7 @@ def cars_list(request):
     cars = Car.objects.filter(is_available=True).order_by('-year', '-id')
     return render(request, 'inventory/cars_list.html', {'cars': cars})
 
+
 def car_detail(request, car_id):
     """
     عرض تفاصيل سيارة محددة بالمعرف car_id.
@@ -21,7 +22,7 @@ def car_detail(request, car_id):
         'year': car.year,
         'price': car.price,
         'owner': car.owner,
-        'image': car.image,
+        'image': car.image,  # CloudinaryField يحتوي على .url تلقائيًا
         'is_available': car.is_available,
     }
 

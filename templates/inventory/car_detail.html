@@ -3,20 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>تفاصيل السيارة</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f6f7;
+            padding: 40px;
+            color: #2c3e50;
+            direction: rtl;
+        }
+
+        .car-details {
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #1565c0;
+        }
+
+        img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2196f3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h2>{{ car.brand }} {{ car.model }}</h2>
-    <p>السنة: {{ car.year }}</p>
-    <p>السعر: {{ car.price }} ريال</p>
-    <p>المالك: {{ car.owner.username }}</p>
-    <p>الحالة: {% if car.is_available %}متوفرة{% else %}غير متوفرة{% endif %}</p>
 
-    {% if car.image %}
-        <img src="{{ car.image.url }}" alt="صورة السيارة" width="400">
-    {% else %}
-        <p>لا توجد صورة</p>
-    {% endif %}
+    <div class="car-details">
+        <h2>{{ brand }} {{ model }}</h2>
+        <p><strong>سنة الصنع:</strong> {{ year }}</p>
+        <p><strong>السعر:</strong> {{ price }} ريال</p>
+        <p><strong>المالك:</strong> {{ owner.username }}</p>
+        <p><strong>الحالة:</strong> {% if is_available %}متوفرة{% else %}غير متوفرة{% endif %}</p>
 
-    <p><a href="{% url 'inventory:cars_list' %}">رجوع إلى القائمة</a></p>
+        {% if image %}
+            <img src="{{ image.url }}" alt="صورة {{ brand }}">
+        {% else %}
+            <p>لا توجد صورة متاحة</p>
+        {% endif %}
+
+        <a href="{% url 'inventory:cars_list' %}" class="back-link">← الرجوع للقائمة</a>
+    </div>
+
 </body>
 </html>
